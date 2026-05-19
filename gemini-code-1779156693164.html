@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Tương tác: AI & Ma trận Nghịch đảo</title>
+    
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                processEscapes: true
+            },
+            showProcessingMessages: false,
+            messageStyle: "none"
+        });
+    </script>
+    <script type="text/javascript" 
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <style>
+        :root {
+            --main-color: #005aa0;
+            --second-color: #b4285a;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --bg-color: #f4f7f6;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--main-color);
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #eef5fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--main-color);
+        }
+        .btn {
+            background-color: var(--main-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #004477;
+        }
+        .btn-download {
+            background-color: var(--second-color);
+        }
+        .btn-download:hover {
+            background-color: #901f46;
+        }
+        .quiz-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .quiz-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .question-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #111;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        .bg-lythuyet { background-color: #9b59b6; }
+        .bg-de { background-color: #2ecc71; }
+        .bg-trungbinh { background-color: #f1c40f; color: #333; }
+        .bg-kho { background-color: #e67e22; }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .option-box {
+            display: block;
+            padding: 12px 15px;
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-box:hover {
+            background: #f0f0f0;
+            border-color: #bbb;
+        }
+        
+        .correct {
+            background-color: #d4edda !important;
+            border-color: var(--success-color) !important;
+            color: #155724 !important;
+            font-weight: bold;
+        }
+        .incorrect {
+            background-color: #f8d7da !important;
+            border-color: var(--danger-color) !important;
+            color: #721c24 !important;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .explanation-box {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #fff9e6;
+            border-left: 4px solid #f39c12;
+            border-radius: 0 4px 4px 0;
+            display: none;
+        }
+        .explanation-title {
+            font-weight: bold;
+            color: #b45f06;
+            margin-bottom: 5px;
+        }
+        .tip-box {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #e67e22;
+            color: #d35400;
+            font-style: italic;
+        }
+        #score-board {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--main-color);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>AI VÀ TƯƠNG LAI GIÁO DỤC - MA TRẬN NGHỊCH ĐẢO</h1>
+    <div class="subtitle">Hệ thống 20 câu hỏi trắc nghiệm tương tác theo triết lý của Dr.rer.nat Duymt</div>
+
+    <div class="toolbar">
+        <div id="score-board">Tiến độ: <span id="answered-count">0</span>/20 câu | Điểm số: <span id="current-score">0</span></div>
+        <button class="btn btn-download" onclick="downloadCurrentFile()">📥 Tải file đề thi này (.html)</button>
+    </div>
+
+    <div id="quiz-container">
+        </div>
+</div>
+
+<script>
+// Dữ liệu câu hỏi chuẩn mã hóa LaTeX tương thích tốt nhất với MathJax v2
+const quizData = [
+    // --- LÝ THUYẾT (5 câu) ---
+    {
+        type: "lythuyet",
+        label: "Lý thuyết",
+        question: "Theo bài giảng của Dr.rer.nat Duymt, ba trụ cột cốt lõi của việc làm chủ và ứng dụng AI (Harnessing AI) là gì?",
+        options: [
+            "A. ChatGPT, Gemini và Claude.",
+            "B. Prompt (Câu lệnh), Context (Ngữ cảnh) và Harnessing (Ghì cương).",
+            "C. Machine Learning, Deep Learning và Big Data.",
+            "D. Canva, PowerPoint và Bảng đen thủ công."
+        ],
+        answer: 1,
+        explain: "Bài giảng nêu rõ ba trụ cột của trí tuệ nhân tạo để áp dụng cá nhân hóa là: Prompt (ra lệnh), Context (bối cảnh/tài liệu mẫu của thầy), và Harnessing (điều khiển đầu ra, ghì cương).",
+        tip: "Mẹo nhớ: 'Ra lệnh' (Prompt) trong một 'Bối cảnh' (Context) rồi 'Ghì cương' (Harnessing) con ngựa AI!"
+    },
+    {
+        type: "lythuyet",
+        label: "Lý thuyết",
+        question: "Cụm từ ẩn dụ \"Ghì cương con ngựa\" (Harnessing) trong bài giảng ám chỉ điều gì trong vai trò của người thầy thời đại mới?",
+        options: [
+            "A. Người thầy phải tự tay lập trình ra các thuật toán AI phức tạp.",
+            "B. Giáo viên không cần làm gì cả, để AI tự do hất học sinh xuống ruộng kiến thức.",
+            "C. Người thầy đóng cương, điều khiển, định hướng cấu trúc đầu ra của AI theo phương pháp sư phạm riêng chứ không để AI tự điều phối mù quáng.",
+            "D. Cấm học sinh sử dụng AI trong toàn bộ quá trình học tập."
+        ],
+        answer: 2,
+        explain: "AI như một con ngựa bất kham, học sinh cưỡi lên dễ bị hất xuống ruộng. Người thầy có kinh nghiệm sẽ có năng lực 'đóng cương', 'ghì cương' để bắt AI đi đúng quỹ đạo kiến thức cốt lõi.",
+        tip: "Harnessing dịch sát nghĩa là đóng yên cương ngựa. Lái AI đi đúng hướng chính là bản chất."
+    },
+    {
+        type: "lythuyet",
+        label: "Lý thuyết",
+        question: "Triết lý giảng dạy khác biệt được Dr.rer.nat Duymt nhấn mạnh đối với một người thầy thực thụ trong kỷ nguyên số là gì?",
+        options: [
+            "A. Trình chiếu những slide PowerPoint thật đẹp mắt, nhiều hiệu ứng động chuyển động.",
+            "B. Dạy những điều mà công thức không nói - bao gồm motivation (động lực sinh ra công thức), bản chất tư duy và mối tương quan hệ thống.",
+            "C. Đọc chép chính xác từng câu chữ trong sách giáo khoa đại học.",
+            "D. Thay thế hoàn toàn con người bằng robot tự động giảng bài."
+        ],
+        answer: 1,
+        explain: "Thầy Duy khẳng định: 'Thầy không dạy những cái gì giống thầy giáo khác. Thầy dạy những cái công thức không nói – cái ẩn sau công thức, motivation để nghĩ ra công thức'.",
+        tip: "Cái gì máy làm tốt (đọc, chép, chiếu công thức) thì nhường máy. Thầy dạy 'Bản chất tư duy'."
+    },
+    {
+        type: "lythuyet",
+        label: "Lý thuyết",
+        question: "Khi nói về việc ứng dụng AI để \"Clone thầy\", mục đích tối cao được bài học nhắc đến là gì?",
+        options: [
+            "A. Để thầy giáo nghỉ hưu sớm và đi chơi.",
+            "B. Tạo ra hàng loạt slide vô hồn giống nhau tại tất cả các trường.",
+            "C. Nhân bản tư duy, phong cách sư phạm cá nhân để hỗ trợ cá thể hóa việc học cho hàng triệu học sinh cùng lúc.",
+            "D. Thương mại hóa bài giảng để bán lấy bản quyền phần mềm."
+        ],
+        answer: 2,
+        explain: "Khi AI clone được phong cách suy nghĩ của thầy, ta có thể nhân bản lên hàng triệu bản sao để đồng hành, chỉ lối cho học sinh cả nước học tư duy mọi lúc mọi nơi.",
+        tip: "Clone ở đây là clone 'phong cách và tư duy sư phạm', không phải sao chép tệp tin thô."
+    },
+    {
+        type: "lythuyet",
+        label: "Lý thuyết",
+        question: "Tại sao trong thời đại AI phát triển vượt bậc, sinh viên vẫn cần đến một người thầy dẫn dắt?",
+        options: [
+            "A. Vì AI không có khả năng tính toán ma trận hay định thức.",
+            "B. Vì người thầy giữ vai trò định hướng cách học, chỉ ra phương pháp cốt lõi và làm chủ (ghì cương) công cụ hỗ trợ tư duy.",
+            "C. Vì chỉ có thầy mới có quyền chấm điểm và cấp bằng tốt nghiệp.",
+            "D. Vì AI chỉ có thể sửa ảnh cũ chứ không thể viết code hay làm toán."
+        ],
+        answer: 1,
+        explain: "AI học nhanh và rộng, nhưng nó có thể 'ngáo' hoặc đưa thông tin loãng. Ông thầy đứng ngoài chỉ cách học và lái AI đi đúng đường trọng tâm.",
+        tip: "Thầy không còn là kho chứa kiến thức, thầy là người định vị (Navigator)."
+    },
+
+    // --- BÀI TẬP DỄ (5 câu) ---
+    {
+        type: "de",
+        label: "Bài tập dễ",
+        question: "Tính định thức của ma trận cấp hai sau: $A = \\begin{pmatrix} 4 & 2 \\\\ 1 & 3 \\end{pmatrix}$.",
+        options: [
+            "A. $\\det(A) = 14$",
+            "B. $\\det(A) = 10$",
+            "C. $\\det(A) = 2$",
+            "D. $\\det(A) = 11$"
+        ],
+        answer: 1,
+        explain: "Áp dụng công thức ma trận $2 \\times 2$: $\\det(A) = ad - bc = 4 \\cdot 3 - 2 \\cdot 1 = 12 - 2 = 10$.",
+        tip: "Nhân chéo chính trừ chéo phụ: $(4 \\times 3) - (2 \\times 1) = 10$."
+    },
+    {
+        type: "de",
+        label: "Bài tập dễ",
+        question: "Cho ma trận $A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}$. Tìm ma trận chuyển vị $A^T$.",
+        options: [
+            "A. $A^T = \\begin{pmatrix} 4 & 2 \\\\ 3 & 1 \\end{pmatrix}$",
+            "B. $A^T = \\begin{pmatrix} 1 & 3 \\\\ 2 & 4 \\end{pmatrix}$",
+            "C. $A^T = \\begin{pmatrix} 2 & 1 \\\\ 4 & 3 \\end{pmatrix}$",
+            "D. $A^T = \\begin{pmatrix} -1 & -2 \\\\ -3 & -4 \\end{pmatrix}$"
+        ],
+        answer: 1,
+        explain: "Ma trận chuyển vị $A^T$ nhận được bằng cách biến hàng thành cột hoặc cột thành hàng. Hàng 1 $(1, 2)$ thành Cột 1; Hàng 2 $(3, 4)$ thành Cột 2.",
+        tip: "Dòng biến thành cột! Giữ nguyên đường chéo chính $(1, 4)$, đổi chỗ hai phần tử chéo phụ $(2 \\leftrightarrow 3)$."
+    },
+    {
+        type: "de",
+        label: "Bài tập dễ",
+        question: "Một ma trận vuông $A$ có ma trận nghịch đảo $A^{-1}$ khi và chỉ khi điều kiện nào sau đây được thỏa mãn?",
+        options: [
+            "A. $\\det(A) = 0$",
+            "B. $\\det(A) \\neq 0$",
+            "C. Ma trận $A$ có tất cả phần tử đều dương.",
+            "D. Ma trận $A$ là ma trận đường chéo."
+        ],
+        answer: 1,
+        explain: "Theo công thức $A^{-1} = \\frac{1}{\\det(A)} \\cdot \\text{adj}(A)$, định thức $\\det(A)$ nằm ở mẫu số nên bắt buộc phải khác $0$ để phép chia hợp lệ.",
+        tip: "Muốn nghịch đảo được thì mẫu số phải sống! $\\det(A) \\neq 0$."
+    },
+    {
+        type: "de",
+        label: "Bài tập dễ",
+        question: "Tìm phần tử Minor $M_{12}$ (phần tử định thức con tương ứng với hàng 1, cột 2) của ma trận $A = \\begin{pmatrix} 5 & 3 \\\\ -2 & 4 \\end{pmatrix}$.",
+        options: [
+            "A. $M_{12} = -2$",
+            "B. $M_{12} = 3$",
+            "C. $M_{12} = 4$",
+            "D. $M_{12} = 2$"
+        ],
+        answer: 0,
+        explain: "Để tính Minor $M_{12}$, ta gạch bỏ hàng 1 và cột 2 của ma trận $A$. Phần tử còn lại duy nhất là $-2$. Do đó $\\det(-2) = -2$.",
+        tip: "Minor $M_{ij}$ chỉ đơn giản là che hàng $i$, che cột $j$ đi rồi tính định thức phần còn sót lại!"
+    },
+    {
+        type: "de",
+        label: "Bài tập dễ",
+        question: "Cho ma trận $A = \\begin{pmatrix} 3 & 1 \\\\ 5 & 2 \\end{pmatrix}$. Hãy tính định thức $\\det(A)$ để kiểm tra tính khả nghịch.",
+        options: [
+            "A. $\\det(A) = 0$ (Không khả nghịch)",
+            "B. $\\det(A) = -1$ (Khả nghịch)",
+            "C. $\\det(A) = 1$ (Khả nghịch)",
+            "D. $\\det(A) = 11$ (Khả nghịch)"
+        ],
+        answer: 2,
+        explain: "$\\det(A) = 3 \\cdot 2 - 1 \\cdot 5 = 6 - 5 = 1$. Vì $\\det(A) = 1 \\neq 0$, ma trận này hoàn toàn khả nghịch.",
+        tip: "Khi $\\det = 1$, việc tính ma trận nghịch đảo cực kỳ đẹp vì hệ số nhân phía trước $\\frac{1}{\\det(A)} = 1$!"
+    },
+
+    // --- BÀI TẬP TRUNG BÌNH (5 câu) ---
+    {
+        type: "trungbinh",
+        label: "Bài tập trung bình",
+        question: "Tìm ma trận nghịch đảo của ma trận $A = \\begin{pmatrix} 2 & 1 \\\\ 5 & 3 \\end{pmatrix}$.",
+        options: [
+            "A. $A^{-1} = \\begin{pmatrix} 3 & -1 \\\\ -5 & 2 \\end{pmatrix}$",
+            "B. $A^{-1} = \\begin{pmatrix} -3 & 1 \\\\ 5 & -2 \\end{pmatrix}$",
+            "C. $A^{-1} = \\begin{pmatrix} 2 & -1 \\\\ -5 & 3 \\end{pmatrix}$",
+            "D. $A^{-1} = \\begin{pmatrix} 3 & 5 \\\\ 1 & 2 \\end{pmatrix}$"
+        ],
+        answer: 0,
+        explain: "Bước 1: $\\det(A) = 2 \\cdot 3 - 1 \\cdot 5 = 1$.<br>Bước 2: Với ma trận $2 \\times 2$, đổi chỗ hai phần tử trên đường chéo chính ($2$ và $3$), đổi dấu hai phần tử đường chéo phụ ($1$ và $5$) $\\rightarrow \\begin{pmatrix} 3 & -1 \\\\ -5 & 2 \\end{pmatrix}$. Chia cho $\\det(A)=1$ giữ nguyên.",
+        tip: "Công thức nhanh ma trận $2 \\times 2$: Đổi chỗ chéo chính, đổi dấu chéo phụ, rồi chia cho định thức!"
+    },
+    {
+        type: "trungbinh",
+        label: "Bài tập trung bình",
+        question: "Tính giá trị phần tử Đại số dòng 2, cột 1 (Cofactor $C_{21}$) của ma trận $A = \\begin{pmatrix} 1 & 2 & 3 \\\\ 0 & 4 & 5 \\\\ 1 & 0 & 6 \\end{pmatrix}$.",
+        options: [
+            "A. $C_{21} = 12$",
+            "B. $C_{21} = -12$",
+            "C. $C_{21} = 8$",
+            "D. $C_{21} = -8$"
+        ],
+        answer: 1,
+        explain: "Công thức: $C_{21} = (-1)^{2+1} \\cdot M_{21}$.<br>Tính $M_{21}$ bằng cách che dòng 2 cột 1: $M_{21} = \\det \\begin{pmatrix} 2 & 3 \\\\ 0 & 6 \\end{pmatrix} = 2 \\cdot 6 - 3 \\cdot 0 = 12$.<br>Vậy $C_{21} = (-1)^3 \\cdot 12 = -12$.",
+        tip: "Đừng quên dấu vị trí! Ô $(2,1)$ có tổng chỉ số $2+1=3$ lẻ nên phải mang dấu trừ ($-$). "
+    },
+    {
+        type: "trungbinh",
+        label: "Bài tập trung bình",
+        question: "Cho ma trận $B = \\begin{pmatrix} 2 & 4 \\\\ 3 & 6 \\end{pmatrix}$. Ma trận nghịch đảo $B^{-1}$ của nó có dạng như thế nào?",
+        options: [
+            "A. $B^{-1} = \\begin{pmatrix} 6 & -4 \\\\ -3 & 2 \\end{pmatrix}$",
+            "B. Không tồn tại ma trận nghịch đảo $B^{-1}$",
+            "C. $B^{-1} = \\begin{pmatrix} 0.5 & 0 \\\\ 0 & 0.25 \\end{pmatrix}$",
+            "D. $B^{-1} = \\begin{pmatrix} -6 & 4 \\\\ 3 & -2 \\end{pmatrix}$"
+        ],
+        answer: 1,
+        explain: "Ta tính định thức của $B$: $\\det(B) = 2 \\cdot 6 - 4 \\cdot 3 = 12 - 12 = 0$. Vì định thức bằng $0$, ma trận không khả nghịch.",
+        tip: "Nhìn nhanh thấy Hàng 2 tỷ lệ với Hàng 1 ($3/2 = 6/4$), định thức chắc chắn bằng 0 $\\rightarrow$ Không nghịch đảo được!"
+    },
+    {
+        type: "trungbinh",
+        label: "Bài tập trung bình",
+        question: "Tìm giá trị của tham số $m$ để ma trận $A = \\begin{pmatrix} m & 2 \\\\ 4 & 2 \\end{pmatrix}$ KHÔNG có ma trận nghịch đảo.",
+        options: [
+            "A. $m = 2$",
+            "B. $m = 0$",
+            "C. $m = 4$",
+            "D. $m = -4$"
+        ],
+        answer: 2,
+        explain: "Ma trận không có ma trận nghịch đảo khi và chỉ khi $\\det(A) = 0$. <br>$\\det(A) = m \\cdot 2 - 2 \\cdot 4 = 2m - 8 = 0 \\implies 2m = 8 \\implies m = 4$.",
+        tip: "Để $\\det = 0$, hai hàng phải tỷ lệ. Hàng dưới có $(4, 2)$, hàng trên có $(m, 2)$. Thấy ngay $m$ phải bằng $4$."
+    },
+    {
+        type: "trungbinh",
+        label: "Bài tập trung bình",
+        question: "Cho ma trận đường chéo $D = \\begin{pmatrix} 2 & 0 & 0 \\\\ 0 & -1 & 0 \\\\ 0 & 0 & 5 \\end{pmatrix}$. Tìm ma trận nghịch đảo $D^{-1}$.",
+        options: [
+            "A. $D^{-1} = \\begin{pmatrix} -2 & 0 & 0 \\\\ 0 & 1 & 0 \\\\ 0 & 0 & -5 \\end{pmatrix}$",
+            "B. $D^{-1} = \\begin{pmatrix} 1/2 & 0 & 0 \\\\ 0 & -1 & 0 \\\\ 0 & 0 & 1/5 \\end{pmatrix}$",
+            "C. $D^{-1} = \\begin{pmatrix} 5 & 0 & 0 \\\\ 0 & -1 & 0 \\\\ 0 & 0 & 2 \\end{pmatrix}$",
+            "D. Không tồn tại vì có số âm."
+        ],
+        answer: 1,
+        explain: "Đối với ma trận đường chéo (các phần tử ngoài đường chéo chính đều bằng 0), ma trận nghịch đảo nhận được đơn giản bằng cách nghịch đảo từng phần tử nằm trên đường chéo chính: $2 \\rightarrow 1/2$, $-1 \\rightarrow 1/(-1) = -1$, $5 \\rightarrow 1/5$.",
+        tip: "Mẹo kinh điển: Nghịch đảo ma trận đường chéo $\\rightarrow$ Nghịch đảo từng phần tử đường chéo!"
+    },
+
+    // --- BÀI TẬP KHÓ (5 câu) ---
+    {
+        type: "kho",
+        label: "Bài tập khó",
+        question: "Tính định thức của ma trận cấp 3 sau bằng quy tắc Sarrus hoặc khai triển: $A = \\begin{pmatrix} 1 & 0 & 2 \\\\ 2 & -1 & 3 \\\\ 4 & 1 & 8 \\end{pmatrix}$.",
+        options: [
+            "A. $\\det(A) = 1$",
+            "B. $\\det(A) = -1$",
+            "C. $\\det(A) = 0$",
+            "D. $\\det(A) = -3$"
+        ],
+        answer: 0,
+        explain: "Khai triển theo hàng 1 để tận dụng số 0:<br>$\\det(A) = 1 \\cdot \\det\\begin{pmatrix} -1 & 3 \\\\ 1 & 8 \\end{pmatrix} - 0 + 2 \\cdot \\det\\begin{pmatrix} 2 & -1 \\\\ 4 & 1 \\end{pmatrix}$<br>$= 1 \\cdot (-8 - 3) + 2 \\cdot (2 - (-4)) = 1 \\cdot (-11) + 2 \\cdot 6 = -11 + 12 = 1$.",
+        tip: "Nên khai triển theo dòng hoặc cột có chứa nhiều số 0 nhất để giảm thiểu khối lượng tính toán chéo."
+    },
+    {
+        type: "kho",
+        label: "Bài tập khó",
+        question: "Cho ma trận vuông cấp 3 có $\\det(A) = 3$. Tính định thức của ma trận nghịch đảo $\\det(A^{-1})$.",
+        options: [
+            "A. $\\det(A^{-1}) = 3$",
+            "B. $\\det(A^{-1}) = -3$",
+            "C. $\\det(A^{-1}) = \\frac{1}{3}$",
+            "D. $\\det(A^{-1}) = 9$"
+        ],
+        answer: 2,
+        explain: "Ta có tính chất quan trọng của ma trận: $A \\cdot A^{-1} = I$. Lấy định thức hai vế: $\\det(A \\cdot A^{-1}) = \\det(I) \\implies \\det(A) \\cdot \\det(A^{-1}) = 1$. <br>Do đó $\\det(A^{-1}) = \\frac{1}{\\det(A)} = \\frac{1}{3}$.",
+        tip: "Định thức của ma trận nghịch đảo bằng nghịch đảo đại số của định thức ma trận gốc!"
+    },
+    {
+        type: "kho",
+        label: "Bài tập khó",
+        question: "Cho ma trận $A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}$. Tìm ma trận phù hợp (Adjugate matrix) $\\text{adj}(A)$.",
+        options: [
+            "A. $\\text{adj}(A) = \\begin{pmatrix} 4 & -2 \\\\ -3 & 1 \\end{pmatrix}$",
+            "B. $\\text{adj}(A) = \\begin{pmatrix} 4 & -3 \\\\ -2 & 1 \\end{pmatrix}$",
+            "C. $\\text{adj}(A) = \\begin{pmatrix} -4 & 2 \\\\ 3 & -1 \\end{pmatrix}$",
+            "D. $\\text{adj}(A) = \\begin{pmatrix} 1 & 3 \\\\ 2 & 4 \\end{pmatrix}$"
+        ],
+        answer: 0,
+        explain: "Ma trận cofactor của $A$ là $\\begin{pmatrix} 4 & -3 \\\\ -2 & 1 \\end{pmatrix}$. Khi thực hiện chuyển vị để lấy ma trận Adjugate $\\text{adj}(A) = [C_{ij}]^T$, ta đổi dòng thành cột $\\rightarrow \\begin{pmatrix} 4 & -2 \\\\ -3 & 1 \\end{pmatrix}$.",
+        tip: "Với ma trận $2 \\times 2$, $\\text{adj}(A)$ chính là ma trận thu được sau khi đổi chỗ đường chéo chính ($1 \\leftrightarrow 4$) và đổi dấu đường chéo phụ ($2, 3 \\rightarrow -2, -3$)!"
+    },
+    {
+        type: "kho",
+        label: "Bài tập khó",
+        question: "Nếu ma trận vuông $A$ cấp 3 thỏa mãn phương trình $A^3 - 2A + I = 0$ (với $I$ là ma trận đơn vị). Khẳng định nào sau đây đúng về tính nghịch đảo của $A$?",
+        options: [
+            "A. $A$ không khả nghịch.",
+            "B. $A$ khả nghịch và $A^{-1} = 2I - A^2$.",
+            "C. $A$ khả nghịch và $A^{-1} = A^2 - 2I$.",
+            "D. $A$ khả nghịch và $A^{-1} = -A^2 - 2A$."
+        ],
+        answer: 1,
+        explain: "Từ giả thiết: $A^3 - 2A + I = 0 \\implies I = 2A - A^3$. <br>Đặt $A$ ra làm nhân tử chung ở vế phải: $I = A(2I - A^2)$. <br>Theo định nghĩa, nhân với $A$ ra ma trận đơn vị $I$ thì biểu thức trong ngoặc chính là ma trận nghịch đảo: $A^{-1} = 2I - A^2$.",
+        tip: "Kỹ thuật cô lập ma trận đơn vị $I$ sang một vế, rút $A$ làm nhân tử chung để nhìn ra ngay $A^{-1}$!"
+    },
+    {
+        type: "kho",
+        label: "Bài tập khó",
+        question: "Giải hệ phương trình sau bằng phương pháp ma trận nghịch đảo $X = A^{-1}B$: $\\begin{cases} 2x + y = 5 \\\\ 3x + 2y = 8 \\end{cases}$.",
+        options: [
+            "A. $x = 1, y = 3$",
+            "B. $x = 2, y = 1$",
+            "C. $x = 3, y = -1$",
+            "D. $x = 0, y = 5$"
+        ],
+        answer: 1,
+        explain: "Biểu diễn hệ: $A = \\begin{pmatrix} 2 & 1 \\\\ 3 & 2 \\end{pmatrix}$, $B = \\begin{pmatrix} 5 \\\\ 8 \\end{pmatrix}$. <br>Tính $A^{-1}$: $\\det(A) = 4-3=1 \\implies A^{-1} = \\begin{pmatrix} 2 & -1 \\\\ -3 & 2 \\end{pmatrix}$.<br>Tính $X = A^{-1}B = \\begin{pmatrix} 2 & -1 \\\\ -3 & 2 \\end{pmatrix} \\begin{pmatrix} 5 \\\\ 8 \\end{pmatrix} = \\begin{pmatrix} 2(5) - 1(8) \\\\ -3(5) + 2(8) \\end{pmatrix} = \\begin{pmatrix} 2 \\\\ 1 \\end{pmatrix}$. Vậy $x=2, y=1$.",
+        tip: "Có thể thử trực tiếp nghiệm từ đáp án vào hệ đề bài cho để tìm kết quả nhanh hơn trong phòng thi trắc nghiệm!"
+    }
+];
+
+let score = 0;
+let answeredCount = 0;
+
+// Hàm khởi tạo và hiển thị đề thi
+function renderQuiz() {
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = '';
+
+    quizData.forEach((item, index) => {
+        const quizItem = document.createElement('div');
+        quizItem.className = 'quiz-item';
+        quizItem.id = `quiz-q-${index}`;
+
+        let badgeClass = 'bg-lythuyet';
+        if(item.type === 'de') badgeClass = 'bg-de';
+        if(item.type === 'trungbinh') badgeClass = 'bg-trungbinh';
+        if(item.type === 'kho') badgeClass = 'bg-kho';
+
+        quizItem.innerHTML = `
+            <div class="question-title">
+                <span class="badge ${badgeClass}">${item.label}</span> Câu ${index + 1}: ${item.question}
+            </div>
+            <ul class="options-list">
+                ${item.options.map((opt, optIdx) => `
+                    <li class="option-box" onclick="checkAnswer(${index}, ${optIdx}, this)">${opt}</li>
+                `).join('')}
+            </ul>
+            <div class="explanation-box" id="explain-${index}">
+                <div class="explanation-title">💡 Giải thích chi tiết:</div>
+                <div>${item.explain}</div>
+                <div class="tip-box">🚀 Mẹo làm nhanh: ${item.tip}</div>
+            </div>
+        `;
+        container.appendChild(quizItem);
+    });
+
+    // Gọi lệnh của MathJax v2 quét và định dạng toàn bộ công thức vừa tạo ra
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
+}
+
+// Hàm kiểm tra đáp án khi người dùng click
+function checkAnswer(qIdx, optIdx, element) {
+    const currentQuestion = quizData[qIdx];
+    const parent = element.parentElement;
+    const options = parent.querySelectorAll('.option-box');
+    const explainBox = document.getElementById(`explain-${qIdx}`);
+
+    options.forEach(opt => opt.classList.add('disabled'));
+
+    if (optIdx === currentQuestion.answer) {
+        element.classList.add('correct');
+        score += 5;
+    } else {
+        element.classList.add('incorrect');
+        options[currentQuestion.answer].classList.add('correct');
+    }
+
+    // Hiển thị khối lời giải
+    explainBox.style.display = 'block';
+    
+    answeredCount++;
+    document.getElementById('answered-count').innerText = answeredCount;
+    document.getElementById('current-score').innerText = score;
+
+    // Đẩy khối lời giải mới mở vào hàng đợi render lại ký tự toán học cho chuẩn xác
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, explainBox]);
+}
+
+// Hàm bổ trợ: Tự động tải file HTML hiện tại về máy
+function downloadCurrentFile() {
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'Trac_Nghiem_Tuong_Tac_AI_Matran_Perfect.html';
+    link.click();
+}
+
+window.onload = renderQuiz;
+</script>
+
+</body>
+</html>
